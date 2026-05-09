@@ -1,4 +1,5 @@
 venv/
 *.pkl
 *.log
+*.log.old
 __pycache__

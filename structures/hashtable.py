@@ -1,4 +1,6 @@
 import json
+import pickle
+from pathlib import Path 
 from datetime import datetime
 
 class MyHashTable:
@@ -31,8 +33,7 @@ class MyHashTable:
             if (deleted_index is not None): index = deleted_index
             else: raise Exception()
         if (self.keys_values[index] in (None, MyHashTable._DELETED)): self.size += 1
-        with open(f'history.log', 'a', encoding = 'utf-8') as f:
-            f.write(f'[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Додано елемент: Ключ={key}\n')
+        self._log_act(key)
         self.keys_values[index] = (key, value)
 
     def get(self, key):
@@ -95,9 +96,9 @@ class MyHashTable:
             if (key_value not in (None, MyHashTable._DELETED)):
                 yield key_value
 
-    def save_to_json(self, path, encoding = 'utf-8'):
+    def save_to_json(self, path):
         data = [{'key': kv[0], 'value': kv[1]} for kv in self.items() if isinstance(kv, tuple)]
-        with open(path, 'w') as f:
+        with open(path, 'w', encoding = 'utf-8') as f:
             json.dump(data, f)
 
     def load_from_json(self, path):
@@ -110,3 +111,23 @@ class MyHashTable:
                     self.put(kv['key'], kv['value'])
         except (FileNotFoundError, json.JSONDecodeError) as e:
             print(f'Файл {path} пошкоджений або відсутній')
+
+    def save_to_pkl(self, path):
+        with open(path, 'wb') as f:
+            pickle.dump(self, f)
+    
+    @staticmethod
+    def load_from_pkl(path):
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    
+    def _log_act(self, key):
+        path = Path("hashtable_history.log")
+        if (path.exists() and path.stat().st_size > 1024):
+            old_log = Path("hashtable_history.log.old")
+            if (old_log.exists()):
+                old_log.unlink()
+            path.rename(old_log)
+            path.touch()
+        with open(path, 'a', encoding='utf-8') as f:
+            f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Додано елемент: Ключ={key}\n")

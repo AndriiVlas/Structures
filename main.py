@@ -26,5 +26,15 @@ run('Пошук значення з ключем 0 у бінарному дер�
 
 run('Збереження хеш-таблиці у JSON', table.save_to_json, 'hashtable.json')
 run('Завантаження хеш-таблиці з JSON', table.load_from_json, 'hashtable.json')
+
+run('Збереження дерева у Pickle Snapshots', tree.save_to_pkl, 'tree.pkl')
+tree = run('Завантаження дерева з Pickle Snapshots', tree.load_from_pkl, 'tree.pkl')
+
 for k, v in table.items():
     print(f'{k}: {v}')
+
+for k, v in tree.inorder_traversal():
+    print(f'{k}: {v}')
+
+for i in range(50): 
+    tree.insert(i, f"value_{i}")
