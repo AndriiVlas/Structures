@@ -1,0 +1,5 @@
+venv/
+*.json
+*.pkl
+*.log
+__pycache__
